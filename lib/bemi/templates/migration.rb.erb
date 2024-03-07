@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+class BemiMigration < ActiveRecord::Migration<%= migration_version %>
+  def up
+    execute(Bemi.migrate)
+  end
+
+  def down
+    execute(Bemi.rollback)
+  end
+end

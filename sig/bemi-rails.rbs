@@ -1,0 +1,10 @@
+class Bemi
+  VERSION: String
+  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  self.migrate: -> void
+  self.rollback: -> void
+  self.set_context: (context: ::Hash[untyped, untyped]) -> void
+  self.context: -> ::Hash[untyped, untyped]
+  self.append_context: -> ^(String, untyped) -> String
+end
