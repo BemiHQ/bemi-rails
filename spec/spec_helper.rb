@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "bemi-rails"
+require "active_record/connection_adapters/postgresql_adapter"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
