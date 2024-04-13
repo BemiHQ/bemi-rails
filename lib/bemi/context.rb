@@ -12,7 +12,7 @@ class Bemi
   end
 
   def self.append_context
-    ->(sql, adapter) do
+    Proc.new do |sql, adapter = ActiveRecord::Base.connection|
       if adapter.write_query?(sql)
         "#{sql} /*Bemi #{Bemi.context.to_json} Bemi*/"
       else
