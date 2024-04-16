@@ -37,6 +37,9 @@ class Bemi
     end
 
     def serialized_context
+      return if context.nil?
+      return if !context.is_a?(Hash) && !context.respond_to?(:has_key?)
+
       result = context.to_json
       result if result.size <= MAX_CONTEXT_SIZE
     end

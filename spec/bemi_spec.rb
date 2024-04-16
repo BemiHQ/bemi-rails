@@ -13,10 +13,11 @@ RSpec.describe Bemi do
 
   describe '.append_context' do
     context 'with adapter' do
+      let(:adapter) { ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new({}) }
+
       it 'appends the context to write SQL queries' do
         Bemi.set_context({ foo: 'bar' })
         sql = "INSERT INTO todos (task) VALUES ('Eat')"
-        adapter = ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new({})
 
         result = Bemi.append_context.call(sql, adapter)
 
@@ -26,7 +27,6 @@ RSpec.describe Bemi do
       it 'does not append the context to read SQL queries' do
         Bemi.set_context({ foo: 'bar' })
         sql = "SELECT * FROM todos"
-        adapter = ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new({})
 
         result = Bemi.append_context.call(sql, adapter)
 
@@ -36,7 +36,15 @@ RSpec.describe Bemi do
       it 'does not append the context if it is too large' do
         Bemi.set_context({ foo: 'a' * 1_000_001 })
         sql = "INSERT INTO todos (task) VALUES ('Eat')"
-        adapter = ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.new({})
+
+        result = Bemi.append_context.call(sql, adapter)
+
+        expect(result).to eq("INSERT INTO todos (task) VALUES ('Eat')")
+      end
+
+      it 'does not append the context if it is not a hash' do
+        Bemi.set_context(['foo', 'bar'])
+        sql = "INSERT INTO todos (task) VALUES ('Eat')"
 
         result = Bemi.append_context.call(sql, adapter)
 
