@@ -3,21 +3,42 @@
 require 'active_record'
 
 class Bemi
-  def self.set_context(context)
-    Thread.current[:bemi_context] = context
-  end
+  READ_QUERY = ActiveRecord::ConnectionAdapters::AbstractAdapter.build_read_query_regexp(
+    :close, :declare, :fetch, :move, :set, :show
+  )
 
-  def self.context
-    Thread.current[:bemi_context]
-  end
+  MAX_CONTEXT_SIZE = 1_000_000 # ~1MB
 
-  def self.append_context
-    ->(sql, adapter) do
-      if adapter.write_query?(sql)
-        "#{sql} /*Bemi #{Bemi.context.to_json} Bemi*/"
-      else
-        sql
+  class << self
+    def set_context(ctx)
+      Thread.current[:bemi_context] = ctx
+    end
+
+    def context
+      Thread.current[:bemi_context]
+    end
+
+    def append_context
+      Proc.new do |sql, adapter = nil| # Adapter is automatically passed only with Rails v7.1+
+        if (adapter ? adapter.write_query?(sql) : write_query?(sql)) && ctx = serialized_context
+          "#{sql} /*Bemi #{ctx} Bemi*/"
+        else
+          sql
+        end
       end
+    end
+
+    private
+
+    def write_query?(sql)
+      !READ_QUERY.match?(sql)
+    rescue ArgumentError
+      !READ_QUERY.match?(sql.b)
+    end
+
+    def serialized_context
+      result = context.to_json
+      result if result.size <= MAX_CONTEXT_SIZE
     end
   end
 end
