@@ -7,8 +7,11 @@ module Bemi::ChangeQueryHelpers
 
   included do
     scope :before, ->(hash) { where('before @> ?', hash.to_json) }
+    scope :before_not, ->(hash) { where.not('before @> ?', hash.to_json) }
     scope :after, ->(hash) { where('after @> ?', hash.to_json) }
+    scope :after_not, ->(hash) { where.not('after @> ?', hash.to_json) }
     scope :context, ->(hash) { where('context @> ?', hash.to_json) }
+    scope :context_not, ->(hash) { where.not('context @> ?', hash.to_json) }
 
     scope :created, -> { where(operation: 'CREATE') }
     scope :updated, -> { where(operation: 'UPDATE') }
