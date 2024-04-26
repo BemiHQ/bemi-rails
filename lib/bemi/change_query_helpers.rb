@@ -17,7 +17,13 @@ module Bemi::ChangeQueryHelpers
     scope :asc, -> { order(committed_at: :asc) }
     scope :desc, -> { order(committed_at: :desc) }
 
-    self.filter_attributes = []
+    self.filter_attributes = (Rails.respond_to?(:filter_parameters) ? Rails.configuration.filter_parameters : []).map do |filter|
+      if filter == :_key
+        /(?<!primary_)key/ # don't filter out primary_key
+      else
+        filter
+      end
+    end
   end
 
   def diff
