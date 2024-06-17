@@ -132,6 +132,7 @@ The cloud solution includes worker ingesters, queues for fault tolerance, and an
 | No performance impact      | ✅   | ❌   | ❌   | ❌   |
 | Easy-to-use UI             | ✅   | ❌   | ❌   | ❌   |
 
+[Learn more about Ruby alternatives](https://blog.bemi.io/audit-trail-in-ruby/)
 ## License
 
 Distributed under the terms of the [LGPL-3.0 License](LICENSE).
